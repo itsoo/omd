@@ -1,0 +1,12 @@
+#define recur(menu)
+    #if(menu.subList != null && menu.subList.size() > 0)
+        <ul class="layui-nav-child">
+            #for(sub : menu.subList)
+                <li>
+                    <a class="#(sub.url ? '_nav' : '')" path="#(sub.url ?? 'javascript:;')"><span>#(sub.name)</span></a>
+                    #@recur(sub)
+                </li>
+            #end
+        </ul>
+    #end
+#end

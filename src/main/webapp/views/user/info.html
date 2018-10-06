@@ -1,0 +1,69 @@
+<div class="sub-body" data-layout="user">
+    ### form表单
+    <form class="layui-form sub-form">
+        <input type="hidden" name="id" value="#(id)" autocomplete="off">
+        <div class="layui-form-item">
+            <label class="layui-form-label">用户名</label>
+            <div class="layui-input-block">
+                <input name="username" value="#(username)" placeholder="请输入用户名" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        #if(id == null)
+            <div class="layui-form-item">
+                <div class="password-tips">初始密码为 #(getInitPass())</div>
+            </div>
+        #end
+        <div class="layui-form-item">
+            <label class="layui-form-label">真实姓名</label>
+            <div class="layui-input-block">
+                <input name="nickname" value="#(nickname)" placeholder="请输入真实姓名" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">角色</label>
+            <div class="layui-input-block">
+                <select name="role" xm-select="select" data-val="#(role)">
+                    #for(r : roles)
+                        <option value="#(r.id)">#(r.name)</option>
+                    #end
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">状态</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="state" lay-skin="switch" lay-text="正常|禁用" value="0" autocomplete="off"
+                    #if(state == "0")
+                        checked
+                    #end
+                >
+            </div>
+        </div>
+        <div class="layui-footer">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="save">保存</button>
+                <button type="button" class="layui-btn layui-btn-primary" lay-close="cancel">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+### js逻辑
+<script>
+    !function () {
+        // 作用域
+        var $layout = $('[data-layout="user"]');
+        // 渲染表单
+        layui.form.render();
+        // 角色
+        var role = $layout.find('[data-val]').attr('data-val');
+        layui.formSelects.render().render('select', {
+            init: role.split(',')
+        });
+        // 保存
+        layui.form.on('submit(save)', function (data) {
+            data.field.state = data.field.state || '1';
+            axios(basePath + '/user/save', data);
+            return false;
+        });
+    }();
+</script>

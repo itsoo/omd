@@ -1,0 +1,50 @@
+<div class="sub-body" data-layout="role">
+    ### form表单
+    <form class="layui-form sub-form">
+        <input type="hidden" name="id" value="#(id)" autocomplete="off">
+        <div class="layui-form-item">
+            <label class="layui-form-label">名称</label>
+            <div class="layui-input-block">
+                <input name="name" value="#(name)" placeholder="请输入名称" class="layui-input" lay-verify="required" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">描述</label>
+            <div class="layui-input-block">
+                <input name="describe" value="#(describe)" placeholder="请输入描述" class="layui-input" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">授权</label>
+            <div class="layui-input-block">
+                <div id="authc" class="layui-form-select select-tree"></div>
+            </div>
+        </div>
+        <div class="layui-footer">
+            <div class="layui-input-block">
+                <button class="layui-btn layui-btn-normal" lay-submit lay-filter="save">保存</button>
+                <button type="button" class="layui-btn layui-btn-primary" lay-close="cancel">取消</button>
+            </div>
+        </div>
+    </form>
+</div>
+### js逻辑
+<script>
+    !function () {
+        // 作用域
+        var $layout = $('[data-layout="role"]');
+        // 角色 id
+        var id = $layout.find('[name="id"]').val();
+        // 权限
+        ajax(basePath + '/role/findRoleAuth', {id: id}, function (res) {
+            // initSelectTree(id, isMultiple, chkboxType, zNodes)
+            layui.initSelectTree("authc", true, {"Y": "ps", "N": "s"}, res).initValue();
+        });
+        // 保存
+        layui.form.on('submit(save)', function (data) {
+            data.field.authc = $layout.find("#authcHide").val();
+            axios(basePath + '/role/save', data);
+            return false;
+        });
+    }();
+</script>

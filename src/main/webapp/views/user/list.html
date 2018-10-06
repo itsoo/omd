@@ -1,0 +1,54 @@
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">数据列表</div>
+                <div class="layui-card-body">
+                    ### 模糊搜索区域
+                    <form class="layui-form sub-search">
+                        <span class="sub-label">真实姓名</span>
+                        <input name="nickname" class="layui-input" autocomplete="off">
+                        <button class="layui-btn" lay-submit lay-filter="search">
+                            <i class="fa fa-search fa-fw"></i>
+                        </button>
+                        <div class="layui-fr">
+                            #hasAuthc("/user/save")
+                                <button type="button" class="layui-btn" id="add">
+                                    <i class="fa fa-plus"></i>添加用户
+                                </button>
+                            #end
+                            #hasAuthc("/user/repass")
+                                <button type="button" class="layui-btn layui-btn-warm" id="resetPass">
+                                    <i class="fa fa-unlock"></i>重置密码
+                                </button>
+                            #end
+                            #hasAuthc("/user/delete")
+                                <button type="button" class="layui-btn layui-btn-danger" id="batchDel">
+                                    <i class="fa fa-trash"></i>批量删除
+                                </button>
+                            #end
+                        </div>
+                    </form>
+                    ### 数据表格
+                    <table class="layui-hide" id="grid" lay-filter="grid"></table>
+                    <script type="text/html" id="toolbar">
+                        <div class="layui-btn-container">
+                            #hasAuthc("/user/save")
+                                <button class="layui-btn sub-btn sub-btn-edit" lay-event="edit">
+                                    <i class="fa fa-edit"></i>编辑
+                                </button>
+                            #end
+                            #hasAuthc("/user/delete")
+                                <button class="layui-btn sub-btn sub-btn-delete" lay-event="del">
+                                    <i class="fa fa-trash-o"></i>删除
+                                </button>
+                            #end
+                        </div>
+                    </script>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+### js逻辑
+<script src="#(basePath)/asset/js/user/list.js"></script>

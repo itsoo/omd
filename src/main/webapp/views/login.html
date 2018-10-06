@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+#include("/views/common/head.html")
+</head>
+<body class="login-body">
+<section class="login-box">
+    <h1 class="logo">#(getAppLogo())</h1>
+    <div class="input-box">
+        <form class="layui-form" action="">
+            <div class="item">
+                <label><i class="fa fa-user"></i>用户名</label>
+                <input type="text" name="username" required lay-verify="required" class="layui-input" autocomplete="off">
+            </div>
+            <div class="item">
+                <label><i class="fa fa-lock"></i>密码</label>
+                <input type="password" name="password" required lay-verify="required" class="layui-input" autocomplete="off">
+            </div>
+            <div class="item">
+                <label><i class="fa fa-shield"></i>验证码</label>
+                <input type="text" name="vcode" required lay-verify="required" class="layui-input vcode-input" autocomplete="off">
+                <img src="#(basePath)/vcode" class="vcode-img">
+            </div>
+            <button type="submit" lay-submit lay-filter="login">登 录</button>
+        </form>
+    </div>
+</section>
+<footer class="login-foot">
+    <div class="copyright">©2018 <a href="javascript:;">itsoo</a> 版权所有 版本: #(getAppVersion())</div>
+</footer>
+### js逻辑
+#include("/views/common/foot.html")
+<script src="#(basePath)/asset/js/login.js"></script>
+</body>
+</html>

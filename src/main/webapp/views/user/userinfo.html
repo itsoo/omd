@@ -1,0 +1,65 @@
+<div class="layui-fluid">
+    <div class="layui-row layui-col-space15">
+        <div class="layui-col-md12">
+            <div class="layui-card">
+                <div class="layui-card-header">用户信息</div>
+                <div class="layui-card-body">
+                    ### 表单
+                    <form class="layui-form">
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">用户名</label>
+                            <div class="layui-input-inline large-input">
+                                <input type="text" class="layui-input" value="admin" autocomplete="off" disabled>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">真实姓名</label>
+                            <div class="layui-input-inline large-input">
+                                <input type="text" name="reallyName" placeholder="请输入真实姓名" class="layui-input" lay-verify="required" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">旧密码</label>
+                            <div class="layui-input-inline large-input">
+                                <input type="password" name="oldPass" placeholder="请输入旧密码" class="layui-input" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">新密码</label>
+                            <div class="layui-input-inline large-input">
+                                <input type="password" name="newPass" lay-verify="pass" placeholder="请输入新密码" class="layui-input" autocomplete="off">
+                            </div>
+                            <div class="layui-form-mid layui-word-aux">6到12位字母和数字组成</div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">确认密码</label>
+                            <div class="layui-input-inline large-input">
+                                <input type="password" name="verPass" lay-verify="pass" placeholder="请确认新密码" class="layui-input" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">角色</label>
+                            <div class="layui-input-inline large-input">
+                                <span class="user-role-card">普通用户</span>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <label class="layui-form-label">状态</label>
+                            <div class="layui-input-inline large-input">
+                                <div class="user-state enable">正常</div>
+                            </div>
+                        </div>
+                        <div class="layui-form-item">
+                            <div class="layui-input-block">
+                                <button class="layui-btn" lay-submit lay-filter="save">保存</button>
+                                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+### js逻辑
+<script src="#(basePath)/asset/js/user/userinfo.js"></script>

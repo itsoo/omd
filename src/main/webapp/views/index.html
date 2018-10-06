@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+#include("/views/common/head.html")
+</head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    ### 头部导航
+    <div class="layui-header">
+        <ul class="layui-nav layui-layout-left">
+            <li class="layui-nav-item nav-switch" lay-unselect>
+                <a href="javascript:;"><i class="fa icon-switch fa-fw"></i></a>
+            </li>
+            #if(home != null)
+                <li class="layui-nav-item">
+                    <a class="_nav" path="#!#(home.url)"><i class="fa fa-#(home.icon) fa-fw"></i></a>
+                </li>
+            #end
+        </ul>
+        <ul class="layui-nav layui-layout-right">
+            <li class="user layui-nav-item">
+                <a href="javascript:;"><i class="fa fa-user-circle-o"></i>#(session.currUser.nickname)</a>
+                <dl class="layui-nav-child">
+                    <dd>
+                        <a class="_nav" path="#!/user/userinfo">个人中心
+                            <span class="layui-badge-dot"></span>
+                        </a>
+                    </dd>
+                    <dd><a href="#(basePath)/logout">安全退出</a></dd>
+                </dl>
+            </li>
+        </ul>
+    </div>
+    ### 左侧导航区域
+    #include("/views/common/authc.html")
+    <div class="layui-side layui-bg-black">
+        <div class="layui-logo">#(getAppLogo())<span>#(getAppName())</span></div>
+        <div class="layui-side-scroll">
+            <ul class="layui-nav layui-nav-tree" lay-filter>
+                #for(menu : menuList)
+                    <li class="layui-nav-item p-item">
+                        <a href="#(menu.url ?? 'javascript:;')">
+                            <i class="fa fa-#(menu.icon)"></i><span>#(menu.name)</span>
+                        </a>
+                        #@recur(menu)
+                    </li>
+                #end
+            </ul>
+        </div>
+    </div>
+    ### 内容主体区域
+    <div class="content-body">
+        <div class="layui-tab layui-tab-brief">
+            <div class="layui-tab-title">
+                <div id="bread" class="layui-breadcrumb"></div>
+            </div>
+            <div class="layui-tab-content">
+                <div id="frame" class="layui-tab-item layui-show"></div>
+            </div>
+        </div>
+    </div>
+</div>
+### js逻辑
+#include("/views/common/foot.html")
+<script src="#(basePath)/asset/js/main.js"></script>
+</body>
+</html>
