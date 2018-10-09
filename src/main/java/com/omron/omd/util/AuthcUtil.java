@@ -4,10 +4,7 @@ import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Record;
 import com.omron.omd.common.AppConst;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * 权限工具类
@@ -42,6 +39,38 @@ public class AuthcUtil {
 
     /**
      * 设置权限集合
+     *
+     * @param userId   userId
+     * @param idAuthc  idAuthc
+     * @param keyAuthc keyAuthc
+     * @param r        Record
+     */
+    public static void setAuthcList(String userId, String idAuthc, String keyAuthc, Record r) {
+        Set<Integer> authcIdSet;
+        Set<String> authcKeySet;
+        if (EhCacheUtil.has(userId, idAuthc)) {
+            // 更新权限 id
+            authcIdSet = EhCacheUtil.get(userId, idAuthc);
+            authcIdSet.add(r.getInt("authc_id"));
+            // 更新权限 key
+            authcKeySet = EhCacheUtil.get(userId, keyAuthc);
+            authcKeySet.add(r.getStr("url"));
+            setPublicAuth(authcKeySet);
+        } else {
+            // 初始化权限 id
+            authcIdSet = new HashSet<>();
+            authcIdSet.add(r.getInt("authc_id"));
+            EhCacheUtil.put(userId, idAuthc, authcIdSet);
+            // 初始化权限 key
+            authcKeySet = new HashSet<>();
+            authcKeySet.add(r.getStr("url"));
+            setPublicAuth(authcKeySet);
+            EhCacheUtil.put(userId, keyAuthc, authcKeySet);
+        }
+    }
+
+    /**
+     * 获取权限集合
      *
      * @param userId   userId
      * @param allAuthc allAuthc

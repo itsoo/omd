@@ -36,7 +36,7 @@
         // 角色 id
         var id = $layout.find('[name="id"]').val();
         // 权限
-        ajax(basePath + '/role/findRoleAuth', {id: id}, function (res) {
+        ajax(basePath + '/role/findRoleAuthc', {id: id}, function (res) {
             // initSelectTree(id, isMultiple, chkboxType, zNodes)
             layui.initSelectTree("authc", true, {"Y": "ps", "N": "s"}, res).initValue();
         });

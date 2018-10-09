@@ -5,10 +5,14 @@ import com.jfinal.plugin.activerecord.Db;
 import com.jfinal.plugin.activerecord.Page;
 import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.SqlPara;
+import com.omron.omd.common.AppConst;
 import com.omron.omd.model.PageInfo;
 import com.omron.omd.util.ArraysUtil;
+import com.omron.omd.util.AuthcUtil;
 import com.omron.omd.util.DataUtil;
+import com.omron.omd.util.EhCacheUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -107,12 +111,48 @@ public class RoleService {
      * @param pageInfo Page对象
      * @return List<Record>
      */
-    public List<Record> findRoleAuth(PageInfo pageInfo) {
-        List<Record> list = Db.find(Db.getSqlPara("role.findRoleAuth", pageInfo.getModel()));
+    public List<Record> findRoleAuthc(PageInfo pageInfo) {
+        List<Record> list = Db.find(Db.getSqlPara("role.findRoleAuthc", pageInfo.getModel()));
         // 字符串 true 转 boolean 类型
         for (Record r : list) {
             r.set("checked", Boolean.parseBoolean(r.getStr("checked")));
         }
         return list;
+    }
+
+    /**
+     * 重置权限缓存
+     */
+    public boolean refreshAuthc() {
+        // 全部权限
+        List<Record> authcList = Db.find(Db.getSql("role.allAuthc"));
+        // home 权限
+        for (int i = 0, len = authcList.size(); i < len; i++) {
+            if ("/home".equals(authcList.get(i).getStr("url"))) {
+                EhCacheUtil.put("", AppConst.HOME_AUTHC, authcList.remove(i));
+                break;
+            }
+        }
+        // 寻找根节点
+        List<Record> rootList = new ArrayList<>();
+        for (Record r : authcList) {
+            if (StrKit.isBlank(r.getStr("pid"))) {
+                rootList.add(r);
+            }
+        }
+        for (Record r : rootList) {
+            r.set("subList", AuthcUtil.getChildList(r.getStr("id"), authcList));
+        }
+        // 配置缓存
+        EhCacheUtil.put("", AppConst.ALL_AUTHC, rootList);
+        // 全部用户相关
+        List<Record> list = Db.find(Db.getSql("role.allRoleAuthc"));
+        // 配置缓存
+        String idAuthc = AppConst.ID_AUTHC;
+        String keyAuthc = AppConst.KEY_AUTHC;
+        for (Record r : list) {
+            AuthcUtil.setAuthcList(r.getStr("user_id"), idAuthc, keyAuthc, r);
+        }
+        return true;
     }
 }

@@ -51,7 +51,14 @@ public class RoleController extends BaseController {
     /**
      * 查询权限列表
      */
-    public void findRoleAuth() {
-        renderJson(service.findRoleAuth(getPageInfo()));
+    public void findRoleAuthc() {
+        renderJson(service.findRoleAuthc(getPageInfo()));
+    }
+
+    /**
+     * 重置权限缓存
+     */
+    public void refreshAuthc() {
+        renderJson(service.refreshAuthc());
     }
 }

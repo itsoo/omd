@@ -5,10 +5,7 @@ import com.jfinal.ext.handler.ContextPathHandler;
 import com.jfinal.ext.interceptor.SessionInViewInterceptor;
 import com.jfinal.kit.PathKit;
 import com.jfinal.kit.PropKit;
-import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.ActiveRecordPlugin;
-import com.jfinal.plugin.activerecord.Db;
-import com.jfinal.plugin.activerecord.Record;
 import com.jfinal.plugin.activerecord.dialect.Sqlite3Dialect;
 import com.jfinal.plugin.activerecord.tx.TxByMethodRegex;
 import com.jfinal.plugin.druid.DruidPlugin;
@@ -18,14 +15,9 @@ import com.omron.omd.directive.AuthcDirective;
 import com.omron.omd.interceptor.AuthcInterceptor;
 import com.omron.omd.interceptor.LoginInterceptor;
 import com.omron.omd.model._MappingKit;
-import com.omron.omd.util.AuthcUtil;
-import com.omron.omd.util.EhCacheUtil;
+import com.omron.omd.service.RoleService;
 
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 /**
  * AppConfig
@@ -105,7 +97,7 @@ public class AppConfig extends JFinalConfig {
     @Override
     public void configInterceptor(Interceptors interceptors) {
         // 配置 session 拦截
-        interceptors.add(new SessionInViewInterceptor());
+        interceptors.addGlobalActionInterceptor(new SessionInViewInterceptor());
         // 配置登录拦截
         interceptors.addGlobalActionInterceptor(new LoginInterceptor());
         // 配置鉴权拦截
@@ -128,57 +120,7 @@ public class AppConfig extends JFinalConfig {
      */
     @Override
     public void afterJFinalStart() {
-        // 全部权限
-        List<Record> authcList = Db.find(Db.getSql("init.authc"));
-        // home 权限
-        for (int i = 0, len = authcList.size(); i < len; i++) {
-            Record r = authcList.get(i);
-            if ("/home".equals(r.getStr("url"))) {
-                EhCacheUtil.put("", AppConst.HOME_AUTHC, authcList.remove(i));
-                break;
-            }
-        }
-        // 寻找根节点
-        List<Record> rootList = new ArrayList<>();
-        for (Record r : authcList) {
-            if (StrKit.isBlank(r.getStr("pid"))) {
-                rootList.add(r);
-            }
-        }
-        for (Record r : rootList) {
-            r.set("subList", AuthcUtil.getChildList(r.getStr("id"), authcList));
-        }
-        // 配置缓存
-        EhCacheUtil.put("", AppConst.ALL_AUTHC, rootList);
-        // 全部用户相关
-        List<Record> list = Db.find(Db.getSql("init.list"));
-        Set<Integer> authcIdSet;
-        Set<String> authcKeySet;
-        // 配置缓存
-        String idAuthc = AppConst.ID_AUTHC;
-        String keyAuthc = AppConst.KEY_AUTHC;
-        String userId;
-        for (Record r : list) {
-            userId = r.getStr("user_id");
-            if (EhCacheUtil.has(userId, idAuthc)) {
-                // 更新权限 id
-                authcIdSet = EhCacheUtil.get(userId, idAuthc);
-                authcIdSet.add(r.getInt("authc_id"));
-                // 更新权限 key
-                authcKeySet = EhCacheUtil.get(userId, keyAuthc);
-                authcKeySet.add(r.getStr("url"));
-                AuthcUtil.setPublicAuth(authcKeySet);
-            } else {
-                // 初始化权限 id
-                authcIdSet = new HashSet<>();
-                authcIdSet.add(r.getInt("authc_id"));
-                EhCacheUtil.put(userId, idAuthc, authcIdSet);
-                // 初始化权限 key
-                authcKeySet = new HashSet<>();
-                authcKeySet.add(r.getStr("url"));
-                AuthcUtil.setPublicAuth(authcKeySet);
-                EhCacheUtil.put(userId, keyAuthc, authcKeySet);
-            }
-        }
+        // 重置权限缓存
+        RoleService.BIZ.refreshAuthc();
     }
 }

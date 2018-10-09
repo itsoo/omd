@@ -23,6 +23,11 @@
                                         <i class="fa fa-trash"></i>批量删除
                                     </button>
                                 #end
+                                #hasAuthc("/role/refreshAuthc")
+                                    <button type="button" class="layui-btn layui-btn-primary" id="refresh">
+                                        <i class="fa fa-refresh"></i>刷新缓存
+                                    </button>
+                                #end
                             </div>
                         </form>
                     </div>

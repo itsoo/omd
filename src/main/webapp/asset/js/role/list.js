@@ -45,4 +45,10 @@
             });
         }
     });
+    // 刷新缓存
+    $('#refresh').click(function () {
+        confirm('确定要刷新缓存吗？', function () {
+            axios(basePath + '/role/refreshAuthc');
+        });
+    });
 }();

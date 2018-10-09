@@ -34,6 +34,7 @@ public class AuthcDirective extends Directive {
         for (Expr actionKey : exprList.getExprArray()) {
             if (AuthcUtil.hasAuthc(userId, actionKey.toString())) {
                 stat.exec(env, scope, writer);
+                return;
             }
         }
     }
