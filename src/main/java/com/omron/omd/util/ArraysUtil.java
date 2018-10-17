@@ -4,7 +4,6 @@ import com.jfinal.kit.StrKit;
 import com.jfinal.plugin.activerecord.Record;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -13,7 +12,7 @@ import java.util.Map;
  *
  * @author zxy
  */
-public class ArraysUtil {
+public final class ArraysUtil {
 
     public static final String SP = ",";
 
@@ -56,16 +55,6 @@ public class ArraysUtil {
     }
 
     /**
-     * 集合转字符串
-     *
-     * @param list 元数据
-     * @return String
-     */
-    public static String joinAs(List list) {
-        return joinAs(list, SP);
-    }
-
-    /**
      * 集合转字符串（按分隔符）
      *
      * @param list 元数据
@@ -84,23 +73,12 @@ public class ArraysUtil {
     }
 
     /**
-     * 数组转字符串（按分隔符）
-     *
-     * @param arr 元数据
-     * @param sp  分隔符
-     * @return String
-     */
-    public static <T> String joinAs(T[] arr, String sp) {
-        return joinAs(Arrays.asList(arr), sp);
-    }
-
-    /**
      * 得到非空元素的数组
      *
      * @param str 元数据
-     * @return String[]
+     * @return List<String>
      */
-    public static String[] getArray(String str) {
+    public static List<String> getArray(String str) {
         String[] array = str.split(SP);
         List<String> arrayList = new ArrayList<>(array.length);
         for (String s : array) {
@@ -109,6 +87,6 @@ public class ArraysUtil {
             }
             arrayList.add(s);
         }
-        return arrayList.toArray(new String[arrayList.size()]);
+        return arrayList;
     }
 }

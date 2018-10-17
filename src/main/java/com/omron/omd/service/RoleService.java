@@ -13,6 +13,7 @@ import com.omron.omd.util.DataUtil;
 import com.omron.omd.util.EhCacheUtil;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -67,20 +68,13 @@ public class RoleService {
         // 添加角色
         if (DataUtil.isAdd(role)) {
             Db.save(TABLE_NAME, role);
-        }
-        // 修改角色
-        else {
+        } else {
             Db.update(TABLE_NAME, role);
         }
         // 更新权限
         int roleId = role.getInt("id");
         Db.deleteById("t_role_authc", "role_id", roleId);
-        String[] authcs = ArraysUtil.getArray(authc);
-        int id;
-        for (String idStr : authcs) {
-            id = Integer.parseInt(idStr);
-            Db.save("t_role_authc", new Record().set("authc_id", id).set("role_id", roleId));
-        }
+        ArraysUtil.getArray(authc).forEach(id -> Db.save("t_role_authc", new Record().set("authc_id", id).set("role_id", roleId)));
         return true;
     }
 
@@ -94,14 +88,12 @@ public class RoleService {
         if (StrKit.isBlank(ids)) {
             return false;
         }
-        int id;
-        for (String idStr : ArraysUtil.getArray(ids)) {
-            id = Integer.parseInt(idStr);
+        ArraysUtil.getArray(ids).forEach(id -> {
             // 删除角色
             Db.deleteById(TABLE_NAME, id);
             // 删除角色关联权限
             Db.deleteById("t_role_authc", "role_id", id);
-        }
+        });
         return true;
     }
 
@@ -114,9 +106,7 @@ public class RoleService {
     public List<Record> findRoleAuthc(PageInfo pageInfo) {
         List<Record> list = Db.find(Db.getSqlPara("role.findRoleAuthc", pageInfo.getModel()));
         // 字符串 true 转 boolean 类型
-        for (Record r : list) {
-            r.set("checked", Boolean.parseBoolean(r.getStr("checked")));
-        }
+        list.forEach(r -> r.set("checked", Boolean.parseBoolean(r.getStr("checked"))));
         return list;
     }
 
@@ -127,22 +117,24 @@ public class RoleService {
         // 全部权限
         List<Record> authcList = Db.find(Db.getSql("role.allAuthc"));
         // home 权限
-        for (int i = 0, len = authcList.size(); i < len; i++) {
-            if ("/home".equals(authcList.get(i).getStr("url"))) {
-                EhCacheUtil.put("", AppConst.HOME_AUTHC, authcList.remove(i));
+        Iterator<Record> it = authcList.iterator();
+        Record authc;
+        while (it.hasNext()) {
+            authc = it.next();
+            if ("/home".equals(authc.getStr("url"))) {
+                EhCacheUtil.put("", AppConst.HOME_AUTHC, authc);
+                it.remove();
                 break;
             }
         }
         // 寻找根节点
         List<Record> rootList = new ArrayList<>();
-        for (Record r : authcList) {
+        authcList.forEach(r -> {
             if (StrKit.isBlank(r.getStr("pid"))) {
                 rootList.add(r);
             }
-        }
-        for (Record r : rootList) {
-            r.set("subList", AuthcUtil.getChildList(r.getStr("id"), authcList));
-        }
+        });
+        rootList.forEach(r -> r.set("subList", AuthcUtil.getChildList(r.getStr("id"), authcList)));
         // 配置缓存
         EhCacheUtil.put("", AppConst.ALL_AUTHC, rootList);
         // 全部用户相关
@@ -150,9 +142,7 @@ public class RoleService {
         // 配置缓存
         String idAuthc = AppConst.ID_AUTHC;
         String keyAuthc = AppConst.KEY_AUTHC;
-        for (Record r : list) {
-            AuthcUtil.setAuthcList(r.getStr("user_id"), idAuthc, keyAuthc, r);
-        }
+        list.forEach(r -> AuthcUtil.setAuthcList(r.getStr("user_id"), idAuthc, keyAuthc, r));
         return true;
     }
 }

@@ -1,7 +1,7 @@
 ### 角色列表
 #sql("list")
   select * from t_role
-  #if(!isBlank(name))
+  #if(notBlank(name))
     where name like '%#(name)%'
   #end
 #end
@@ -14,7 +14,7 @@
   from t_authc a
     left join (
       select authc_id from t_role_authc where
-      #if(id != null)
+      #if(notBlank(id))
         role_id = #(id)
       #else
         1 <> 1

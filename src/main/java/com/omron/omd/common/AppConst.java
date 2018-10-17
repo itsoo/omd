@@ -7,10 +7,6 @@ package com.omron.omd.common;
  */
 public class AppConst {
 
-    private static final String APP_LOGO = "OMD";
-    private static final String APP_NAME = "设备管理系统";
-    private static final String APP_VERSION = "v0.1.1";
-
     public static final String BASE_VIEW_PATH = "/views";
     public static final String INIT_PASSWORD = "123456";
 
@@ -19,6 +15,10 @@ public class AppConst {
     public static final String HOME_AUTHC = "homeAuthc";
     public static final String ID_AUTHC = "authcIdSet";
     public static final String KEY_AUTHC = "authcKeySet";
+
+    private static final String APP_LOGO = "OMD";
+    private static final String APP_NAME = "设备管理系统";
+    private static final String APP_VERSION = "v0.1.1";
 
     /**
      * 应用 LOGO

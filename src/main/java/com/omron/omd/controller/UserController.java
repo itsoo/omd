@@ -1,8 +1,14 @@
 package com.omron.omd.controller;
 
 import com.jfinal.core.ActionKey;
+import com.jfinal.plugin.activerecord.Record;
+import com.omron.omd.common.AppConst;
 import com.omron.omd.controller.base.BaseController;
+import com.omron.omd.model.PageInfo;
 import com.omron.omd.service.UserService;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * UserController
@@ -50,9 +56,24 @@ public class UserController extends BaseController {
     }
 
     /**
+     * 重置密码
+     */
+    public void repass() {
+        renderJson(service.repass(getPageInfo()));
+    }
+
+    /**
      * 个人中心
      */
     public void userinfo() {
+        PageInfo pageInfo = getPageInfo();
+        Map<String, Object> model = pageInfo.getModel();
+        if (model == null) {
+            model = new HashMap<>(2);
+        }
+        Record user = (Record) getSession().getAttribute(AppConst.SESSION);
+        model.put("id", user.getStr("id"));
+        setAttrs(service.userinfo(pageInfo));
         render("userinfo.html");
     }
 
@@ -61,13 +82,8 @@ public class UserController extends BaseController {
      */
     @ActionKey("/user/userinfo/save")
     public void userInfoSave() {
-
-    }
-
-    /**
-     * 重置密码
-     */
-    public void repass() {
-        renderJson(service.repass(getPageInfo()));
+        PageInfo pageInfo = getPageInfo();
+        pageInfo.getModel().put("userId", getUserId());
+        renderJson(service.userInfoSave(pageInfo));
     }
 }

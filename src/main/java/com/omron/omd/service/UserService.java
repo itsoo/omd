@@ -12,10 +12,7 @@ import com.omron.omd.util.ArraysUtil;
 import com.omron.omd.util.DataUtil;
 import com.omron.omd.util.MD5Util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 用户业务层
@@ -73,25 +70,22 @@ public class UserService {
     public boolean save(PageInfo pageInfo) {
         Record user = new Record().setColumns(pageInfo.getModel());
         // 获取 role
-        String[] roles = ArraysUtil.getArray(user.getStr("role"));
+        List<String> roles = ArraysUtil.getArray(user.getStr("role"));
         // 添加用户
         if (DataUtil.isAdd(user, "role")) {
             MD5Util.encrypt(user.set("password", AppConst.INIT_PASSWORD));
             Db.save(TABLE_NAME, user);
-        }
-        // 修改用户
-        else {
+        } else {
             Db.update(TABLE_NAME, user);
         }
         // 删除用户角色
         int userId = user.getInt("id");
         Db.deleteById("t_user_role", "user_id", userId);
         // 添加用户角色
-        List<Record> userRole = new ArrayList<>(roles.length);
-        for (String roleId : roles) {
-            userRole.add(new Record().set("user_id", userId).set("role_id", roleId));
-        }
-        Db.batchSave("t_user_role", userRole, roles.length);
+        int length = roles.size();
+        List<Record> userRole = new ArrayList<>(length);
+        roles.forEach(roleId -> userRole.add(new Record().set("user_id", userId).set("role_id", roleId)));
+        Db.batchSave("t_user_role", userRole, length);
         return true;
     }
 
@@ -106,14 +100,12 @@ public class UserService {
         if (StrKit.isBlank(ids)) {
             return false;
         }
-        int userId;
-        for (String id : ArraysUtil.getArray(ids)) {
-            userId = Integer.parseInt(id);
+        ArraysUtil.getArray(ids).forEach(id -> {
             // 删除用户角色
-            Db.deleteById("t_user_role", "user_id", userId);
+            Db.deleteById("t_user_role", "user_id", id);
             // 删除用户
-            Db.deleteById(TABLE_NAME, userId);
-        }
+            Db.deleteById(TABLE_NAME, id);
+        });
         return true;
     }
 
@@ -131,14 +123,11 @@ public class UserService {
         // 数据库查询验证登录
         Record user = Db.findFirst(Db.getSqlPara("user.logon", map));
         if (user != null) {
-            String state = user.getStr("state");
             // 登录成功
-            if ("0".equals(state)) {
+            if ("0".equals(user.getStr("state"))) {
                 result.put("success", true);
                 result.put("message", user);
-            }
-            // 账号被禁用
-            else {
+            } else {
                 result.put("message", "账号被禁用");
             }
         } else {
@@ -163,13 +152,61 @@ public class UserService {
             password = AppConst.INIT_PASSWORD;
         }
         // 查询用户信息
-        Kv cond = Kv.by("idArray", ArraysUtil.getArray(ids));
-        List<Record> list = Db.find(Db.getSqlPara("user.findUserList", cond));
+        List<Record> list = Db.find(Db.getSqlPara("user.findUserList", Kv.by("idArray", ArraysUtil.getArray(ids))));
         // 重置用户密码
-        for (Record user : list) {
-            MD5Util.encrypt(user.set("password", password));
+        String repass = password;
+        list.forEach(user -> {
+            MD5Util.encrypt(user.set("password", repass));
             Db.update(TABLE_NAME, user);
-        }
+        });
         return true;
+    }
+
+    /**
+     * 用户信息
+     *
+     * @param pageInfo Page对象
+     * @return Map
+     */
+    public Map<String, Object> userinfo(PageInfo pageInfo) {
+        Map<String, Object> userinfo = info(pageInfo);
+        List<Record> roles = new ArrayList<>();
+        String role = (String) userinfo.remove("role");
+        // 处理用户拥有角色
+        if (StrKit.notBlank(role)) {
+            List<String> roleIds = ArraysUtil.getArray(role);
+            ((List<Record>) userinfo.get("roles")).forEach(r -> {
+                for (Iterator<String> it = roleIds.iterator(); it.hasNext(); ) {
+                    if (it.next().equals(r.getStr("id"))) {
+                        roles.add(r);
+                        it.remove();
+                        break;
+                    }
+                }
+            });
+        }
+        userinfo.put("roles", roles);
+        return userinfo;
+    }
+
+    /**
+     * 保存用户信息
+     *
+     * @param pageInfo Page对象
+     * @return boolean
+     */
+    public boolean userInfoSave(PageInfo pageInfo) {
+        Record user = new Record().setColumns(pageInfo.getModel()).remove("verPass");
+        String oldPass = user.getStr("oldPass");
+        String newPass = user.getStr("newPass");
+        Record r = Db.findById(TABLE_NAME, Integer.parseInt(user.getStr("userId")));
+        String password = r.getStr("password");
+        String username = r.getStr("username");
+        if (MD5Util.verify(username + oldPass, password)) {
+            MD5Util.encrypt(r.set("password", newPass));
+            Db.update(TABLE_NAME, r.set("nickname", user.getStr("nickname")));
+            return true;
+        }
+        return false;
     }
 }

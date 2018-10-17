@@ -19,8 +19,7 @@ public class AuthcInterceptor implements Interceptor {
     public void intercept(Invocation inv) {
         Controller controller = inv.getController();
         // userId
-        Record user = (Record) controller.getSession().getAttribute(AppConst.SESSION);
-        String userId = user.getStr("id");
+        String userId = ((Record) controller.getSession().getAttribute(AppConst.SESSION)).getStr("id");
         // 无权限
         if (!AuthcUtil.hasAuthc(userId, inv.getActionKey())) {
             HttpUtil.renderNotAuthc(controller);

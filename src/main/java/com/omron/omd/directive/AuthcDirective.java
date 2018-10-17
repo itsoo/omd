@@ -26,10 +26,10 @@ public class AuthcDirective extends Directive {
 
     @Override
     public void exec(Env env, Scope scope, Writer writer) {
-        // session 获取 userId
+        // 获取 session
         HttpSession session = (HttpSession) scope.getData().get("session");
-        Record user = (Record) session.getAttribute(AppConst.SESSION);
-        String userId = user.getStr("id");
+        // 获取 userId
+        String userId = ((Record) session.getAttribute(AppConst.SESSION)).getStr("id");
         // 获取参数
         for (Expr actionKey : exprList.getExprArray()) {
             if (AuthcUtil.hasAuthc(userId, actionKey.toString())) {

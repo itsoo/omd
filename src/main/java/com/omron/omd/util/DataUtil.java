@@ -8,7 +8,7 @@ import com.jfinal.plugin.activerecord.Record;
  *
  * @author zxy
  */
-public class DataUtil {
+public final class DataUtil {
 
     /**
      * 添加方法钩子

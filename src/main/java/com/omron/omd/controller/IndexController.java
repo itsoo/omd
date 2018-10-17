@@ -30,8 +30,7 @@ public class IndexController extends BaseController {
         Record user = (Record) getSession().getAttribute(AppConst.SESSION);
         String userId = user.getStr("id");
         // 用户菜单权限
-        Record home = AuthcUtil.getHomeUrl(userId);
-        setAttr("home", home);
+        setAttr("home", AuthcUtil.getHomeUrl(userId));
         setAttr("menuList", AuthcUtil.getAuthcList(userId, allAuthc));
         render("index.html");
     }
@@ -45,13 +44,10 @@ public class IndexController extends BaseController {
         if (validateCaptcha("vcode")) {
             Map<String, Object> result = service.logon(removeKey("vcode"));
             if ((boolean) result.get("success")) {
-                getSession().setAttribute(AppConst.SESSION, result.get("message"));
-                result.remove("message");
+                getSession().setAttribute(AppConst.SESSION, result.remove("message"));
             }
             setAttrs(result);
-        }
-        // 验证码错误
-        else {
+        } else {
             setAttr("success", false);
             setAttr("message", "验证码错误");
         }

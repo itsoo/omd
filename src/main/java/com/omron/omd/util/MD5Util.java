@@ -10,7 +10,7 @@ import java.util.Map;
  *
  * @author zxy
  */
-public class MD5Util {
+public final class MD5Util {
 
     private static final String SALT = "28805937716";
 
@@ -86,6 +86,6 @@ public class MD5Util {
      * @return boolean
      */
     public static boolean verify(String str, String tar) {
-        return tar.equalsIgnoreCase(md5(str));
+        return tar.equals(encrypt(str));
     }
 }

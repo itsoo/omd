@@ -33,9 +33,9 @@ public class AppConfig extends JFinalConfig {
     public void configConstant(Constants constants) {
         PropKit.use("config.properties");
         constants.setDevMode(PropKit.getBoolean("devMode"));
-        constants.setError403View("error/403.html");
-        constants.setError404View("error/404.html");
-        constants.setError500View("error/500.html");
+        constants.setError403View("/views/error/403.html");
+        constants.setError404View("/views/error/404.html");
+        constants.setError500View("/views/error/500.html");
     }
 
     /**

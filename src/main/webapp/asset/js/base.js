@@ -12,7 +12,7 @@ function getChecked() {
         }
         return ids;
     }
-    parent.layer.msg('请至少选择 1 条数据', {offset: 't', skin: 'top-message-danger', anim: 6});
+    top.layer.msg('请至少选择 1 条数据', {offset: 't', skin: 'top-message-danger', anim: 6});
     return false;
 }
 
@@ -29,7 +29,7 @@ function removeHTMLTag(str) {
 
 // URL 为空
 function urlIsEmpty(url) {
-    return !url || url == '' || url == 'javascript:;';
+    return !url || url == 'javascript:;';
 }
 
 // Ajax 请求
@@ -79,7 +79,7 @@ function axios(url, data, elem, success, error) {
     if (arguments.length == 0) {
         throw 'error: arguments is empty';
     }
-    var layer = parent.layer || layui.layer;
+    var layer = top.layer || layui.layer;
     if (typeof elem == 'function') {
         error = success;
         success = elem;
@@ -102,7 +102,7 @@ function axios(url, data, elem, success, error) {
     success = success || function (res) {
             if (JSON.stringify(res) === 'true' || res.success) {
                 layer.msg('操作成功', {icon: 1, time: 1000, anim: 4}, function () {
-                    parent.layer.close(layerIndex(elem));
+                    top.layer.close(layerIndex(elem));
                     var $btn = $('.layui-laypage-btn')[0];
                     $btn && $btn.click();
                 });
@@ -119,7 +119,7 @@ function axios(url, data, elem, success, error) {
 
 // 取消关闭弹框
 $('body').on('click', '[lay-close="cancel"]', function () {
-    parent.layer.close(layerIndex(this));
+    top.layer.close(layerIndex(this));
 });
 
 // 获取窗口 index
@@ -127,12 +127,12 @@ function layerIndex(obj) {
     if (window.name || window.name == '') {
         return $(obj).parents('.layui-layer').attr('times');
     }
-    return parent.layer.getFrameIndex(window.name);
+    return top.layer.getFrameIndex(window.name);
 }
 
 // 确认对话框
 function confirm(message, callback) {
-    parent.layer.confirm(message, {icon: 0, anim: 6}, callback);
+    top.layer.confirm(message, {icon: 0, anim: 6}, callback);
 }
 
 // 单页面弹框
@@ -143,7 +143,7 @@ function openAjax(title, area, url, data, callback) {
         };
     ajax(url, data, 'html', function (res) {
         $(res).find('.sub-form').attr('data-index');
-        parent.layer.open({
+        top.layer.open({
             title: title,
             type: 1,
             area: area,

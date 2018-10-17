@@ -13,7 +13,7 @@ import javax.servlet.http.HttpServletRequest;
  *
  * @author zxy
  */
-public class HttpUtil {
+public final class HttpUtil {
 
     private static final String REQUEST_HEADER = "x-requested-with";
     private static final String AJAX_TYPE = "Ajax-Type";
@@ -56,14 +56,10 @@ public class HttpUtil {
             // load 页面
             if ("html".equals(controller.getHeader(AJAX_TYPE))) {
                 controller.render(viewPath + "/load/401.html");
-            }
-            // json ajax
-            else {
+            } else {
                 controller.renderJson(Kv.by("success", false).set("message", "很抱歉，您没有访问权限"));
             }
-        }
-        // 非 ajax 请求
-        else {
+        } else {
             controller.render(viewPath + "/401.html");
         }
     }
@@ -80,14 +76,10 @@ public class HttpUtil {
             if ("html".equals(controller.getHeader(AJAX_TYPE))) {
                 String basePath = JFinal.me().getServletContext().getContextPath();
                 controller.renderHtml("<script>location.href='" + basePath + "/'</script>");
-            }
-            // json ajax
-            else {
+            } else {
                 controller.renderJson(Kv.by("success", false).set("message", "您未登录，或登录已超时"));
             }
-        }
-        // 非 ajax 请求
-        else {
+        } else {
             controller.forwardAction("/logout");
         }
     }

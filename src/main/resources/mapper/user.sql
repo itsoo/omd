@@ -1,7 +1,7 @@
 ### 用户列表
 #sql("list")
   select * from t_user
-  #if(!isBlank(nickname))
+  #if(notBlank(nickname))
     where nickname like '%#(nickname)%'
   #end
 #end

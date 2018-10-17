@@ -7,7 +7,7 @@ import com.jfinal.plugin.ehcache.CacheKit;
  *
  * @author zxy
  */
-public class EhCacheUtil {
+public final class EhCacheUtil {
 
     private static final String CACHE_NAME = "app";
 

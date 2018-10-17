@@ -4,6 +4,8 @@ import com.jfinal.core.Const;
 import com.jfinal.core.Controller;
 import com.jfinal.json.FastJson;
 import com.jfinal.kit.Base64Kit;
+import com.jfinal.plugin.activerecord.Record;
+import com.omron.omd.common.AppConst;
 import com.omron.omd.model.PageInfo;
 import org.apache.commons.io.IOUtils;
 
@@ -35,6 +37,15 @@ public class BaseController extends Controller {
         Map<String, String[]> paraMap = getParaMap();
         pageInfo.setModel(paraMap, PAGE, LIMIT);
         return pageInfo;
+    }
+
+    /**
+     * 获取用户 id
+     *
+     * @return String
+     */
+    protected String getUserId() {
+        return ((Record) getSession().getAttribute(AppConst.SESSION)).getStr("id");
     }
 
     /**
